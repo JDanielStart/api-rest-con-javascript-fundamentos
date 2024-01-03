@@ -1,4 +1,5 @@
 
+const API_KEY = "live_qCLEUdso1SkWAyZQAzmzaQEVoXDe0Pk5RqDd3K1p5nPsYHs2muoPvMgboWxnFqSn";
 const URL_RANDOM_CATS = "https://api.thecatapi.com/v1/images/search?limit=2";
 const URL_FAVORITES_CATS = "https://api.thecatapi.com/v1/favourites";
 const URL_DELETE_CAT = "https://api.thecatapi.com/v1/favourites/";
@@ -43,7 +44,7 @@ async function loadRandomCats() {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
-            "x-api-key": "live_qCLEUdso1SkWAyZQAzmzaQEVoXDe0Pk5RqDd3K1p5nPsYHs2muoPvMgboWxnFqSn"
+            "x-api-key": API_KEY
         }
     });
 
@@ -90,7 +91,7 @@ async function loadFavoritesCats() {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
-            "x-api-key": "live_qCLEUdso1SkWAyZQAzmzaQEVoXDe0Pk5RqDd3K1p5nPsYHs2muoPvMgboWxnFqSn"
+            "x-api-key": API_KEY
         }
     });
 
@@ -129,7 +130,7 @@ async function saveFavoriteCat(id) {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            "x-api-key": "live_qCLEUdso1SkWAyZQAzmzaQEVoXDe0Pk5RqDd3K1p5nPsYHs2muoPvMgboWxnFqSn"
+            "x-api-key": API_KEY
         },
         body: JSON.stringify({
             image_id: id
@@ -143,7 +144,7 @@ async function deleteFavoriteCat(id) {
         method: "DELETE",
         headers: {
             "Content-Type": "application/json",
-            "x-api-key": "live_qCLEUdso1SkWAyZQAzmzaQEVoXDe0Pk5RqDd3K1p5nPsYHs2muoPvMgboWxnFqSn"
+            "x-api-key": API_KEY
         }
     });
     loadFavoritesCats();
