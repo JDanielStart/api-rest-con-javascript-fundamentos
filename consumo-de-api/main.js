@@ -1,14 +1,14 @@
 
 const URL_RANDOM_CATS = "https://api.thecatapi.com/v1/images/search?limit=2";
 const URL_FAVORITES_CATS = "https://api.thecatapi.com/v1/favourites";
-
-const img1 = document.querySelector("#img1");
-const img2 = document.querySelector("#img2");
-
-const btnRandomCats = document.querySelector("#recargar");
-const btnSaveCats = document.querySelector("#guardar1");
+const URL_DELETE_CAT = "https://api.thecatapi.com/v1/favourites/";
 
 const spanError = document.querySelector("#error");
+const sectionRandoms = document.querySelector("#randomMichis");
+const sectionFavorites = document.querySelector("#favoritesMichis");
+
+let randomsCats;
+let favoritesCats;
 
 async function loadFetch (api, post = null) {
 
@@ -26,7 +26,9 @@ async function loadFetch (api, post = null) {
             spanError.innerHTML = `Hubo un error ${response.status}`;
             console.log("entro");
         }
-        data = await response.json();
+        else {
+            data = await response.json();
+        }
     }
     catch(error) {
         console.error(error);
@@ -37,20 +39,54 @@ async function loadFetch (api, post = null) {
 }
 
 async function loadRandomCats() {
-    const catImg = await loadFetch(URL_RANDOM_CATS, {
+    randomsCats = await loadFetch(URL_RANDOM_CATS, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
             "x-api-key": "live_qCLEUdso1SkWAyZQAzmzaQEVoXDe0Pk5RqDd3K1p5nPsYHs2muoPvMgboWxnFqSn"
         }
     });
-    img1.src = catImg[0].url;
-    img2.src = catImg[1].url;
-    console.log(catImg);
+
+    sectionRandoms.innerHTML = "";
+
+    const h2 = document.createElement("h2");
+    const h2Text = document.createTextNode("Michis aleatorios");
+
+    const buttonReload = document.createElement("button");
+    const buttonText = document.createTextNode("Recargar michis");
+
+    buttonReload.appendChild(buttonText);
+    buttonReload.addEventListener("click", () => loadRandomCats());
+
+    h2.appendChild(h2Text);
+    sectionRandoms.appendChild(h2);
+
+    randomsCats.forEach(cat => {
+
+        const article = document.createElement("article");
+        const img = document.createElement("img");
+        const button = document.createElement("button");
+        const buttonText = document.createTextNode("Guardar michi en favoritos");
+
+        button.appendChild(buttonText);
+        button.addEventListener("click", () => saveFavoriteCat(cat.id));
+
+        img.src = cat.url;
+        img.alt = "Imagen de un michi";
+        img.width = 150;
+
+        article.appendChild(img);
+        article.appendChild(button);
+
+        sectionRandoms.appendChild(article);
+    });
+
+    sectionRandoms.appendChild(buttonReload);
+
 }
 
 async function loadFavoritesCats() {
-    const catImg = await loadFetch(URL_FAVORITES_CATS, {
+    favoritesCats = await loadFetch(URL_FAVORITES_CATS, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -58,36 +94,62 @@ async function loadFavoritesCats() {
         }
     });
 
-    console.log(catImg);
+    sectionFavorites.innerHTML = "";
+
+    const h2 = document.createElement("h2");
+    const h2Text = document.createTextNode("Michis favoritos");
+    h2.appendChild(h2Text);
+    sectionFavorites.appendChild(h2);
+
+    favoritesCats.forEach(cat => {
+        
+        const article = document.createElement("article");
+        const img = document.createElement("img");
+        const button = document.createElement("button");
+        const buttonText = document.createTextNode("Sacar al michi de favoritos");
+
+        button.appendChild(buttonText);
+        button.addEventListener("click", () => deleteFavoriteCat(cat.id));
+
+        img.src = cat.image.url;
+        img.alt = "Imagen de un michi";
+        img.width = 150;
+
+        article.appendChild(img);
+        article.appendChild(button);
+
+        sectionFavorites.appendChild(article);
+    });
+
+    console.log(favoritesCats);
 }
 
-async function saveFavoritesCats() {
-    const rest = await loadFetch(URL_FAVORITES_CATS, {
+async function saveFavoriteCat(id) {
+    await loadFetch(URL_FAVORITES_CATS, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
             "x-api-key": "live_qCLEUdso1SkWAyZQAzmzaQEVoXDe0Pk5RqDd3K1p5nPsYHs2muoPvMgboWxnFqSn"
         },
         body: JSON.stringify({
-            image_id: "4n0"
+            image_id: id
         })
     });
-
-    
-
-    console.log(rest.message);
-    console.log(rest.status);
-    console.log(rest);
+    loadFavoritesCats();
 }
 
-btnRandomCats.addEventListener("click", async () => {
-    loadRandomCats();
-});
+async function deleteFavoriteCat(id) {
+    await loadFetch(`${URL_DELETE_CAT}${id}`, {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json",
+            "x-api-key": "live_qCLEUdso1SkWAyZQAzmzaQEVoXDe0Pk5RqDd3K1p5nPsYHs2muoPvMgboWxnFqSn"
+        }
+    });
+    loadFavoritesCats();
+}
 
-btnSaveCats.addEventListener("click", async () => {
-    saveFavoritesCats();
-});
-
+loadRandomCats();
 loadFavoritesCats();
 
 
