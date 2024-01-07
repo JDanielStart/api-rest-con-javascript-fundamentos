@@ -3,10 +3,13 @@ const API_KEY = "live_qCLEUdso1SkWAyZQAzmzaQEVoXDe0Pk5RqDd3K1p5nPsYHs2muoPvMgboW
 const URL_RANDOM_CATS = "https://api.thecatapi.com/v1/images/search?limit=2";
 const URL_FAVORITES_CATS = "https://api.thecatapi.com/v1/favourites";
 const URL_DELETE_CAT = "https://api.thecatapi.com/v1/favourites/";
+const URL_UPLOAD_CAT = "https://api.thecatapi.com/v1/images/upload";
+const URL_GET_UPLOAD_CATS = "https://api.thecatapi.com/v1/images/";
 
 const spanError = document.querySelector("#error");
 const sectionRandoms = document.querySelector("#randomMichis");
 const sectionFavorites = document.querySelector("#favoritesMichis");
+const buttonSendMichi = document.querySelector("#sendMichi");
 
 let randomsCats;
 let favoritesCats;
@@ -58,6 +61,8 @@ async function loadRandomCats() {
 
     buttonReload.appendChild(buttonText);
     buttonReload.addEventListener("click", () => loadRandomCats());
+
+    buttonSendMichi.addEventListener("click", () => sendMichi());
 
     h2.appendChild(h2Text);
     sectionRandoms.appendChild(h2);
@@ -121,8 +126,18 @@ async function loadFavoritesCats() {
 
         sectionFavorites.appendChild(article);
     });
+}
 
-    console.log(favoritesCats);
+async function loadUploadCat() {
+    res = await loadFetch(URL_GET_UPLOAD_CATS, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "x-api-key": API_KEY
+        }
+    });
+
+    return res;
 }
 
 async function saveFavoriteCat(id) {
@@ -148,6 +163,25 @@ async function deleteFavoriteCat(id) {
         }
     });
     loadFavoritesCats();
+}
+
+async function sendMichi() {
+    const form = document.querySelector("#uploadingForm");
+    const formData = new FormData(form);
+
+    console.log(formData.get("file"), "form data");
+
+    await loadFetch(URL_UPLOAD_CAT, {
+        method: "POST",
+        headers: {
+            "x-api-key": API_KEY
+        },
+        body: formData
+    });
+
+    res = await loadUploadCat();
+
+    await saveFavoriteCat(res[0].id);
 }
 
 loadRandomCats();
