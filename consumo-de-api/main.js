@@ -1,3 +1,10 @@
+const api = axios.create({
+    baseURL: "https://api.thecatapi.com/v1/",
+    headers: {
+        "x-api-key": "live_qCLEUdso1SkWAyZQAzmzaQEVoXDe0Pk5RqDd3K1p5nPsYHs2muoPvMgboWxnFqSn"
+    }
+});
+api.defaults.headers.common[""]
 
 const API_KEY = "live_qCLEUdso1SkWAyZQAzmzaQEVoXDe0Pk5RqDd3K1p5nPsYHs2muoPvMgboWxnFqSn";
 const URL_RANDOM_CATS = "https://api.thecatapi.com/v1/images/search?limit=2";
@@ -141,7 +148,7 @@ async function loadUploadCat() {
 }
 
 async function saveFavoriteCat(id) {
-    await loadFetch(URL_FAVORITES_CATS, {
+    /* await loadFetch(URL_FAVORITES_CATS, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -150,6 +157,10 @@ async function saveFavoriteCat(id) {
         body: JSON.stringify({
             image_id: id
         })
+    }); */
+
+    const {data, status} = await api.post("favourites", {
+        image_id: id
     });
     loadFavoritesCats();
 }
